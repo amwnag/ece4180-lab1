@@ -1,33 +1,43 @@
 #include "mbed.h"
-#include "mbed.h"
 #include "PinDetect.h"
 
-PinDetect incr(p24);
-PinDetect decr(p23);
 
-PwmOut boardLED(LED1);
-DigitalOut debugLED(LED4);
+PinDetect incr(p28);
+PinDetect decr(p27);
+
+PinDetect rSwitch(p15);
+PinDetect gSwitch(p16);
+PinDetect bSwitch(p17);
+
+PwmOut rOut(p26);
+PwmOut gOut(p25);
+PwmOut bOut(p24);
+
+PwmOut debugLED(LED4);
+DigitalOut debugSwitch(LED1);
 
 float volatile pwmVal;
 
 void incrCallback(void) {
     pwmVal = (pwmVal >= 1) ? 1 : (pwmVal + 0.1);
-    boardLED = pwmVal;
     wait(0.1);
 }
 
 void decrCallback(void) {
     pwmVal = (pwmVal <= 0) ? 0 : (pwmVal - 0.1);
-    boardLED = pwmVal;
     wait(0.1);
 }
 
 int main() {
     pwmVal = 1;
-    boardLED = pwmVal;
 
     incr.mode(PullUp);
     decr.mode(PullUp);
+
+    rSwitch.mode(PullUp);
+    gSwitch.mode(PullUp);
+    bSwitch.mode(PullUp);
+
     wait(0.001); // delay for initial pullup
 
     // interrupt callback function
@@ -40,7 +50,13 @@ int main() {
 
     debugLED = 1;
     while (1) {
-        debugLED = !debugLED;
+        rOut = rSwitch ? 0 : pwmVal; // check if grounded
+        gOut = gSwitch ? 0 : pwmVal;
+        bOut = bSwitch ? 0 : pwmVal;
+
+        debugSwitch = rSwitch;
+
+        debugLED = pwmVal;
         wait(1);
     }
 }
