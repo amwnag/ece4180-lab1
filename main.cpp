@@ -1,7 +1,8 @@
 #include "mbed.h"
-
-BusOut mbedleds(LED1,LED2,LED3,LED4);
-//BusOut/In is faster than multiple DigitalOut/Ins
+#include "USBMouse.h"
+//USB mouse demo using a 5-way Navigation Switch (Digital Joystick)
+//Needs USB connector breakout with D+, D-, and Gnd to mbed LLP1768
+USBMouse mouse;
 
 class Nav_Switch
 {
@@ -59,16 +60,26 @@ inline Nav_Switch::operator int ()
     return _pins.read();
 }
 
-// up down left right fire
 Nav_Switch myNav( p14, p11, p12, p10, p13); //pin order on Sparkfun breakout
 
 int main()
 {
-    while(1) {
-        //with pullups a button hit is a "0" - "~" inverts data to leds
-        mbedleds = ~(myNav & 0x0F); //update leds with nav switch direction inputs
-        if(myNav.fire()) mbedleds = 0x0F; //special all leds on case for fire (center button)
-        //or use - if(myNav[4]==0) mbedleds = 0x0F; //can index a switch bit like this
-        wait(0.02);
+    int16_t x = 0;
+    int16_t y = 0;
+    uint8_t left_click = 0;
+    while (1) {
+        //check relative mouse movement
+        x=0;
+        y=0;
+        if (myNav.up()) x=-1;
+        if (myNav.down()) x=1;
+        if (myNav.left()) y=1;
+        if (myNav.right()) y=-1;
+        //check mouse left button click
+        if (myNav.fire()) left_click = 1;
+        if (!myNav.fire())left_click = 0;
+        //send a mouse data packet to PC
+        mouse.update(x, y, left_click, 0);
+        wait(0.001);
     }
 }

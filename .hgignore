@@ -3,4 +3,5 @@
 ^compile_commands.json$
 ^.clangd$
 ^.cache$
+^USBDevice$
 ^mbed$
