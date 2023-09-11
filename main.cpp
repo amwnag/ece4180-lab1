@@ -5,26 +5,26 @@
 PinDetect incr(p24);
 PinDetect decr(p23);
 
-PwmOut boardLED(LED1);
+PwmOut extLED(p21);
 DigitalOut debugLED(LED4);
 
 float volatile pwmVal;
 
 void incrCallback(void) {
     pwmVal = (pwmVal >= 1) ? 1 : (pwmVal + 0.1);
-    boardLED = pwmVal;
+    extLED = pwmVal;
     wait(0.1);
 }
 
 void decrCallback(void) {
     pwmVal = (pwmVal <= 0) ? 0 : (pwmVal - 0.1);
-    boardLED = pwmVal;
+    extLED = pwmVal;
     wait(0.1);
 }
 
 int main() {
     pwmVal = 1;
-    boardLED = pwmVal;
+    extLED = pwmVal;
 
     incr.mode(PullUp);
     decr.mode(PullUp);
