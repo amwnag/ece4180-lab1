@@ -1,5 +1,0 @@
-ROOT=.
-DEVICE_ID[/home/studio/workspace/lab1p1]=YMOHDBn6laNtWq89
-DEVICE_TYPE[/home/studio/workspace/lab1p1]=connected
-TARGET=LPC1768
-TARGET_CODE=1010
